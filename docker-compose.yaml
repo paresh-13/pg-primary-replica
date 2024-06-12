@@ -1,7 +1,7 @@
 version: '3.8'
 x-postgres-common:
   &postgres-common
-  image: postgres:14-alpine
+  image: postgres:13
   user: postgres
   restart: always
   healthcheck:
@@ -16,9 +16,9 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_USER: user
+      POSTGRES_USER: myuser
       POSTGRES_DB: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: mypassword
       POSTGRES_HOST_AUTH_METHOD: "scram-sha-256\nhost replication all 0.0.0.0/0 md5"
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
     command: |
