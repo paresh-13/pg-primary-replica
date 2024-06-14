@@ -1,9 +1,9 @@
-version: '3.8'  
-x-postgres-common:     #section defines common configuration options for both the primary and replica PostgreSQL instances
+version: '3.8'
+x-postgres-common:
   &postgres-common
-  image: postgres:13   
+  image: postgres:14-alpine
   user: postgres
-  restart: always 
+  restart: always
   healthcheck:
     test: 'pg_isready -U user --dbname=postgres'
     interval: 10s
@@ -14,8 +14,8 @@ services:
   postgres_primary:
     <<: *postgres-common
     ports:
-      - 5432:5432    #Maps port 5432 on the host to port 5432 on the container.
-    environment:      #Sets environment variables for PostgreSQL.
+      - 5432:5432
+    environment:
       POSTGRES_USER: myuser
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: mypassword
@@ -24,15 +24,15 @@ services:
     command: |
       postgres 
       -c wal_level=replica 
-      -c hot_standby=on       #Allows the server to run in standby mode.
-      -c max_wal_senders=10     #Sets the maximum number of concurrent connections from standby servers.
-      -c max_replication_slots=10   #Sets the maximum number of replication slots.
-      -c hot_standby_feedback=on     #Sends feedback from standby to primary to prevent transaction ID wraparound.
+      -c hot_standby=on 
+      -c max_wal_senders=10 
+      -c max_replication_slots=10 
+      -c hot_standby_feedback=on
     volumes:
-      - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql  
+      - ./00_init.sql:/docker-entrypoint-initdb.d/00_init.sql
 
-  postgres_replica:     #This section defines the replica PostgreSQL service. 
-    <<: *postgres-common  
+  postgres_replica:
+    <<: *postgres-common
     ports:
       - 5433:5432
     environment:
